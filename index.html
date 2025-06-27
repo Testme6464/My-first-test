@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>နှစ် ၁၀၀ ပြက္ခဒိန် (1950 - 2049)</title>
+    <style>
+        /* CSS: စာမျက်နှာကို လှပအောင် ဒီဇိုင်းဆွဲခြင်း */
+        body {
+            font-family: 'Myanmar Text', 'Padauk', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 15px; /* ဘေးဘောင်ကို အနည်းငယ်ကျဉ်းလိုက်သည် */
+            box-sizing: border-box;
+        }
+
+        .calendar-container {
+            width: 100%;
+            /* max-width: 600px;  <-- ဒီတစ်ကြောင်းကို ဖယ်ရှားလိုက်ပါပြီ */
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .controls select {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            flex-grow: 1;
+        }
+        
+        .controls button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex-grow: 1;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .controls button:hover {
+            background-color: #2980b9;
+        }
+
+        #calendar-header {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar-table th, .calendar-table td {
+            text-align: center;
+            padding: 12px 5px;
+            width: 14.28%; 
+        }
+
+        .calendar-table th {
+            color: #7f8c8d;
+            font-weight: bold;
+            border-bottom: 2px solid #ecf0f1;
+            font-size: 0.9rem;
+        }
+        
+        .calendar-table td {
+            color: #34495e;
+            font-weight: 500;
+            border-radius: 50%;
+            height: 40px;
+            line-height: 40px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .date-cell:not(.empty-cell):hover {
+            background-color: #ecf0f1;
+            cursor: default;
+        }
+        
+        .prev-month-date, .next-month-date {
+            color: #bdc3c7;
+        }
+
+        .today {
+            background-color: #e74c3c;
+            color: white !important;
+            font-weight: bold;
+        }
+
+        /* ကြော်ငြာထည့်ရန် နေရာ */
+        #ad-placeholder {
+            width: 100%;
+            /* max-width: 600px; <-- ဒီတစ်ကြောင်းကိုလည်း ဖယ်ရှားလိုက်ပါပြီ */
+            height: 100px;
+            border: 2px dashed #dcdcdc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+            color: #bdc3c7;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HTML: Website ရဲ့ အရိုးစု အပိုင်း -->
+    <div class="calendar-container">
+        <h1>နှစ် ၁၀၀ ပြက္ခဒိန်</h1>
+        <p style="text-align:center; margin-top:-20px; color:#555;">(1950 - 2049)</p>
+        
+        <div class="controls">
+            <select id="year-select"></select>
+            <select id="month-select"></select>
+            <button id="show-btn">ပြက္ခဒိန်ပြရန်</button>
+        </div>
+
+        <div id="calendar-header"></div>
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th>တနင်္ဂနွေ</th>
+                    <th>တနင်္လာ</th>
+                    <th>အင်္ဂါ</th>
+                    <th>ဗုဒ္ဓဟူး</th>
+                    <th>ကြာသပတေး</th>
+                    <th>သောကြာ</th>
+                    <th>စနေ</th>
+                </tr>
+            </thead>
+            <tbody id="calendar-body">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ကြော်ငြာထည့်ရန် နေရာ -->
+    <div id="ad-placeholder">
+        ဤနေရာတွင် ကြော်ငြာ ထည့်သွင်းနိုင်သည်
+    </div>
+
+    <script>
+        // JavaScript code က အရင်အတိုင်းပါပဲ၊ ပြောင်းလဲရန်မလိုပါ။
+        const yearSelect = document.getElementById('year-select');
+        const monthSelect = document.getElementById('month-select');
+        const showBtn = document.getElementById('show-btn');
+        const calendarHeader = document.getElementById('calendar-header');
+        const calendarBody = document.getElementById('calendar-body');
+
+        const burmeseMonths = [
+            "ဇန်နဝါရီ", "ဖေဖော်ဝါရီ", "မတ်", "ဧပြီ", "မေ", "ဇွန်",
+            "ဇူလိုင်", "ဩဂုတ်", "စက်တင်ဘာ", "အောက်တိုဘာ", "နိုဝင်ဘာ", "ဒီဇင်ဘာ"
+        ];
+        
+        function initialize() {
+            for (let year = 1950; year <= 2049; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+
+            burmeseMonths.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+            
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth();
+
+            if (currentYear >= 1950 && currentYear <= 2049) {
+                yearSelect.value = currentYear;
+                monthSelect.value = currentMonth;
+                generateCalendar(currentYear, currentMonth);
+            } else {
+                yearSelect.value = 1950;
+                monthSelect.value = 0;
+                generateCalendar(1950, 0);
+            }
+        }
+
+        function generateCalendar(year, month) {
+            calendarHeader.textContent = `${burmeseMonths[month]} ${year}`;
+            calendarBody.innerHTML = '';
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+            const todayDate = today.getDate();
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            let date = 1;
+            let nextMonthDate = 1;
+            
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
+
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement('td');
+                    cell.classList.add('date-cell');
+
+                    if (i === 0 && j < firstDayOfMonth) {
+                        cell.textContent = daysInPrevMonth - firstDayOfMonth + 1 + j;
+                        cell.classList.add('prev-month-date');
+                    } else if (date > daysInMonth) {
+                        cell.textContent = nextMonthDate++;
+                        cell.classList.add('next-month-date');
+                    } else {
+                        cell.textContent = date;
+                        if (isCurrentMonth && date === todayDate) {
+                            cell.classList.add('today');
+                        }
+                        date++;
+                    }
+                    row.appendChild(cell);
+                }
+                calendarBody.appendChild(row);
+            }
+        }
+
+        showBtn.addEventListener('click', () => {
+            const selectedYear = parseInt(yearSelect.value);
+            const selectedMonth = parseInt(monthSelect.value);
+            generateCalendar(selectedYear, selectedMonth);
+        });
+
+        initialize();
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+	atOptions = {
+		'key' : '678aa6a3aa7dd59cc23ca4862af07a45',
+		'format' : 'iframe',
+		'height' : 50,
+		'width' : 320,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/678aa6a3aa7dd59cc23ca4862af07a45/invoke.js"></script>
