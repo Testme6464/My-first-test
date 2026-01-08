@@ -1,247 +1,111 @@
-<script>
-(function(gzkek){
-var d = document,
-    s = d.createElement('script'),
-    l = d.scripts[d.scripts.length - 1];
-s.settings = gzkek || {};
-s.src = "\/\/faithfuldifficulty.com\/b.XJVqsLdXGbl\/0kYzWdcp\/deWmy9Hu\/ZkU\/lCkAPxTdYs0lNDjHIhz\/O_TBYPtdNWjrQf2NMBjKM\/5tNQwb";
-s.async = true;
-s.referrerPolicy = 'no-referrer-when-downgrade';
-l.parentNode.insertBefore(s, l);
-})({})
-</script>
-
-<meta name="d7c1680c12d6a89c0fcd39d447e94c741c29df70" content="d7c1680c12d6a89c0fcd39d447e94c741c29df70" />
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>နှစ် ၁၀၀ ပြက္ခဒိန် (1950 - 2049)</title>
+    <title>Voice Translator (MM-KR)</title>
     <style>
-        /* CSS: စာမျက်နှာကို လှပအောင် ဒီဇိုင်းဆွဲခြင်း */
-        body {
-            font-family: 'Myanmar Text', 'Padauk', sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 15px; /* ဘေးဘောင်ကို အနည်းငယ်ကျဉ်းလိုက်သည် */
-            box-sizing: border-box;
+        body { font-family: 'Segoe UI', sans-serif; background-color: #fff5eb; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .app-container { background: #fffcf9; width: 100%; max-width: 450px; height: 90vh; border-radius: 30px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
+        .display-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; text-align: center; font-size: 26px; color: #5f5a54; font-weight: 500; overflow-y: auto; line-height: 1.5; }
+        .footer { background: #fee7d3; padding: 40px 20px; border-radius: 40px 40px 0 0; }
+        
+        /* Mic Buttons with Flag Backgrounds */
+        .mic-row { display: flex; justify-content: space-around; align-items: center; }
+        .mic-btn { 
+            width: 100px; height: 100px; border-radius: 50%; border: 5px solid #8d5524; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; 
+            font-size: 35px; transition: 0.3s; background-size: cover; background-position: center;
+            position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        .calendar-container {
-            width: 100%;
-            /* max-width: 600px;  <-- ဒီတစ်ကြောင်းကို ဖယ်ရှားလိုက်ပါပြီ */
-            background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            box-sizing: border-box;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .controls select {
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            flex-grow: 1;
+        /* Myanmar Flag Mic */
+        #btnMM { 
+            background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://flagcdn.com/w320/mm.png'); 
         }
         
-        .controls button {
-            padding: 12px 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            flex-grow: 1;
-            font-size: 1rem;
-            font-weight: bold;
+        /* Korea Flag Mic */
+        #btnKR { 
+            background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('https://flagcdn.com/w320/kr.png'); 
         }
 
-        .controls button:hover {
-            background-color: #2980b9;
-        }
+        .mic-btn span { color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); z-index: 1; }
+        .mic-btn:active { transform: scale(0.9); }
+        .listening { border-color: #ff4757; animation: pulse 1.5s infinite; }
 
-        #calendar-header {
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #34495e;
-            margin-bottom: 20px;
-        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
         
-        .calendar-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .calendar-table th, .calendar-table td {
-            text-align: center;
-            padding: 12px 5px;
-            width: 14.28%; 
-        }
-
-        .calendar-table th {
-            color: #7f8c8d;
-            font-weight: bold;
-            border-bottom: 2px solid #ecf0f1;
-            font-size: 0.9rem;
-        }
-        
-        .calendar-table td {
-            color: #34495e;
-            font-weight: 500;
-            border-radius: 50%;
-            height: 40px;
-            line-height: 40px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        
-        .date-cell:not(.empty-cell):hover {
-            background-color: #ecf0f1;
-            cursor: default;
-        }
-        
-        .prev-month-date, .next-month-date {
-            color: #bdc3c7;
-        }
-
-        .today {
-            background-color: #e74c3c;
-            color: white !important;
-            font-weight: bold;
-        }
-
-        /* ကြော်ငြာထည့်ရန် နေရာ */
-        #ad-placeholder {
-            width: 100%;
-            /* max-width: 600px; <-- ဒီတစ်ကြောင်းကိုလည်း ဖယ်ရှားလိုက်ပါပြီ */
-            height: 100px;
-            border: 2px dashed #dcdcdc;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f9f9f9;
-            color: #bdc3c7;
-            font-size: 1.2rem;
-            text-align: center;
-        }
+        .label { text-align: center; margin-top: 10px; font-weight: bold; color: #8d5524; font-size: 14px; }
+        .btn-group { display: flex; flex-direction: column; align-items: center; }
     </style>
 </head>
 <body>
 
-    <!-- HTML: Website ရဲ့ အရိုးစု အပိုင်း -->
-    <div class="calendar-container">
-        <h1>နှစ် ၁၀၀ ပြက္ခဒိန်</h1>
-        <p style="text-align:center; margin-top:-20px; color:#555;">(1950 - 2049)</p>
-        
-        <div class="controls">
-            <select id="year-select"></select>
-            <select id="month-select"></select>
-            <button id="show-btn">ပြက္ခဒိန်ပြရန်</button>
+<div class="app-container">
+    <div class="display-area" id="displayText">
+        စကားပြောရန် အလံကို နှိပ်ပါ
+    </div>
+
+    <div class="footer">
+        <div class="mic-row">
+            <div class="btn-group">
+                <button class="mic-btn" id="btnMM" onclick="startTranslate('my-MM', 'ko')"><span>🎤</span></button>
+                <div class="label">MYANMAR</div>
+            </div>
+            <div class="btn-group">
+                <button class="mic-btn" id="btnKR" onclick="startTranslate('ko-KR', 'my')"><span>🎤</span></button>
+                <div class="label">KOREAN</div>
+            </div>
         </div>
-
-        <div id="calendar-header"></div>
-        <table class="calendar-table">
-            <thead>
-                <tr>
-                    <th>တနင်္ဂနွေ</th>
-                    <th>တနင်္လာ</th>
-                    <th>အင်္ဂါ</th>
-                    <th>ဗုဒ္ဓဟူး</th>
-                    <th>ကြာသပတေး</th>
-                    <th>သောကြာ</th>
-                    <th>စနေ</th>
-                </tr>
-            </thead>
-            <tbody id="calendar-body">
-            </tbody>
-        </table>
     </div>
+</div>
 
-    <!-- ကြော်ငြာထည့်ရန် နေရာ -->
-    <div id="ad-placeholder">
-        ဤနေရာတွင် ကြော်ငြာ ထည့်သွင်းနိုင်သည်
-    </div>
+<script>
+    const displayText = document.getElementById('displayText');
 
-    <script>
-        // JavaScript code က အရင်အတိုင်းပါပဲ၊ ပြောင်းလဲရန်မလိုပါ။
-        const yearSelect = document.getElementById('year-select');
-        const monthSelect = document.getElementById('month-select');
-        const showBtn = document.getElementById('show-btn');
-        const calendarHeader = document.getElementById('calendar-header');
-        const calendarBody = document.getElementById('calendar-body');
+    function speak(text, langCode) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = langCode;
+        window.speechSynthesis.speak(utterance);
+    }
 
-        const burmeseMonths = [
-            "ဇန်နဝါရီ", "ဖေဖော်ဝါရီ", "မတ်", "ဧပြီ", "မေ", "ဇွန်",
-            "ဇူလိုင်", "ဩဂုတ်", "စက်တင်ဘာ", "အောက်တိုဘာ", "နိုဝင်ဘာ", "ဒီဇင်ဘာ"
-        ];
-        
-        function initialize() {
-            for (let year = 1950; year <= 2049; year++) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
-            }
-
-            burmeseMonths.forEach((month, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = month;
-                monthSelect.appendChild(option);
-            });
-            
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const currentMonth = today.getMonth();
-
-            if (currentYear >= 1950 && currentYear <= 2049) {
-                yearSelect.value = currentYear;
-                monthSelect.value = currentMonth;
-                generateCalendar(currentYear, currentMonth);
-            } else {
-                yearSelect.value = 1950;
-                monthSelect.value = 0;
-                generateCalendar(1950, 0);
-            }
+    async function startTranslate(inputLang, targetLang) {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Browser support မလုပ်ပါ။ Chrome ကိုသုံးပေးပါ။");
+            return;
         }
 
-        function generateCalendar(year, month) {
-            calendarHeader.textContent = `${burmeseMonths[month]} ${year}`;
-            calendarBody.innerHTML = '';
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = inputLang;
+        const activeBtn = inputLang === 'my-MM' ? document.getElementById('btnMM') : document.getElementById('btnKR');
+        
+        activeBtn.classList.add('listening');
+        displayText.innerText = "... နားထောင်နေသည် ...";
 
-            const today = new Date();
-            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
-            const todayDate = today.getDate();
+        recognition.onresult = async (event) => {
+            const transcript = event.results[0][0].transcript;
+            displayText.innerText = "ဘာသာပြန်နေသည်...";
 
-            const firstDayOfMonth = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            try {
+                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${inputLang.split('-')[0]}&tl=${targetLang}&dt=t&q=${encodeURI(transcript)}`);
+                const data = await res.json();
+                const translatedText = data[0][0][0];
+
+                displayText.innerHTML = `<div style="font-size: 18px; color: #a0978d; margin-bottom:10px;">${transcript}</div><div><b>${translatedText}</b></div>`;
+                
+                speak(translatedText, targetLang === 'ko' ? 'ko-KR' : 'my-MM');
+            } catch (error) {
+                displayText.innerText = "Error ဖြစ်သွားပါပြီ။ ပြန်ကြိုးစားကြည့်ပါ။";
+            }
+        };
+
+        recognition.onend = () => { activeBtn.classList.remove('listening'); };
+        recognition.start();
+    }
+</script>
+
+</body>
+</html>
             const daysInPrevMonth = new Date(year, month, 0).getDate();
 
             let date = 1;
