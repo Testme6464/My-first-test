@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Translator (MM-KR)</title>
+    <title>Voice Translator (MM-TH)</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #fff5eb; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .app-container { background: #fffcf9; width: 100%; max-width: 450px; height: 90vh; border-radius: 30px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
-        .display-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; text-align: center; font-size: 26px; color: #5f5a54; font-weight: 500; overflow-y: auto; line-height: 1.5; }
-        .footer { background: #fee7d3; padding: 40px 20px; border-radius: 40px 40px 0 0; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .app-container { background: #ffffff; width: 100%; max-width: 450px; height: 90vh; border-radius: 30px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
+        .display-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; text-align: center; font-size: 26px; color: #333; font-weight: 500; overflow-y: auto; line-height: 1.5; }
+        .footer { background: #f8f9fa; padding: 40px 20px; border-top: 1px solid #eee; border-radius: 40px 40px 0 0; }
         
-        /* Mic Buttons with Flag Backgrounds */
         .mic-row { display: flex; justify-content: space-around; align-items: center; }
         .mic-btn { 
-            width: 100px; height: 100px; border-radius: 50%; border: 5px solid #8d5524; 
+            width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; 
             cursor: pointer; display: flex; align-items: center; justify-content: center; 
             font-size: 35px; transition: 0.3s; background-size: cover; background-position: center;
             position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -24,9 +23,9 @@
             background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://flagcdn.com/w320/mm.png'); 
         }
         
-        /* Korea Flag Mic */
-        #btnKR { 
-            background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('https://flagcdn.com/w320/kr.png'); 
+        /* Thai Flag Mic */
+        #btnTH { 
+            background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('https://flagcdn.com/w320/th.png'); 
         }
 
         .mic-btn span { color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); z-index: 1; }
@@ -35,7 +34,7 @@
 
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
         
-        .label { text-align: center; margin-top: 10px; font-weight: bold; color: #8d5524; font-size: 14px; }
+        .label { text-align: center; margin-top: 10px; font-weight: bold; color: #555; font-size: 14px; }
         .btn-group { display: flex; flex-direction: column; align-items: center; }
     </style>
 </head>
@@ -49,12 +48,12 @@
     <div class="footer">
         <div class="mic-row">
             <div class="btn-group">
-                <button class="mic-btn" id="btnMM" onclick="startTranslate('my-MM', 'ko')"><span>🎤</span></button>
+                <button class="mic-btn" id="btnMM" onclick="startTranslate('my-MM', 'th')"><span>🎤</span></button>
                 <div class="label">MYANMAR</div>
             </div>
             <div class="btn-group">
-                <button class="mic-btn" id="btnKR" onclick="startTranslate('ko-KR', 'my')"><span>🎤</span></button>
-                <div class="label">KOREAN</div>
+                <button class="mic-btn" id="btnTH" onclick="startTranslate('th-TH', 'my')"><span>🎤</span></button>
+                <div class="label">THAI</div>
             </div>
         </div>
     </div>
@@ -71,13 +70,13 @@
 
     async function startTranslate(inputLang, targetLang) {
         if (!('webkitSpeechRecognition' in window)) {
-            alert("Browser support မလုပ်ပါ။ Chrome ကိုသုံးပေးပါ။");
+            alert("Chrome Browser ကို အသုံးပြုပေးပါ။");
             return;
         }
 
         const recognition = new webkitSpeechRecognition();
         recognition.lang = inputLang;
-        const activeBtn = inputLang === 'my-MM' ? document.getElementById('btnMM') : document.getElementById('btnKR');
+        const activeBtn = inputLang === 'my-MM' ? document.getElementById('btnMM') : document.getElementById('btnTH');
         
         activeBtn.classList.add('listening');
         displayText.innerText = "... နားထောင်နေသည် ...";
@@ -91,11 +90,12 @@
                 const data = await res.json();
                 const translatedText = data[0][0][0];
 
-                displayText.innerHTML = `<div style="font-size: 18px; color: #a0978d; margin-bottom:10px;">${transcript}</div><div><b>${translatedText}</b></div>`;
+                displayText.innerHTML = `<div style="font-size: 18px; color: #888; margin-bottom:10px;">${transcript}</div><div><b>${translatedText}</b></div>`;
                 
-                speak(translatedText, targetLang === 'ko' ? 'ko-KR' : 'my-MM');
+                // ပြန်ဆိုထားသော ဘာသာစကားဖြင့် အသံထွက်ပေးရန်
+                speak(translatedText, targetLang === 'th' ? 'th-TH' : 'my-MM');
             } catch (error) {
-                displayText.innerText = "Error ဖြစ်သွားပါပြီ။ ပြန်ကြိုးစားကြည့်ပါ။";
+                displayText.innerText = "Error ဖြစ်သွားပါသည်။ ပြန်ကြိုးစားပါ။";
             }
         };
 
