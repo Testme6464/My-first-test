@@ -3,189 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MM-TH Voice Translator</title>
+    <title>Voice Translator with Manual Switch</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f7f3f0; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden;
-        }
-        .app-container { 
-            background: #ffffff; 
-            width: 100%; 
-            max-width: 480px; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            position: relative;
-        }
-        /* စာသားပြသသည့်နေရာ */
-        .display-area { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            padding: 30px; 
-            text-align: center; 
-            font-size: 24px; 
-            color: #4a4a4a;
-            overflow-y: auto;
-        }
-        .original-text { font-size: 18px; color: #999; margin-bottom: 10px; }
-        .translated-text { font-weight: bold; color: #333; }
-
-        /* အောက်ခြေအပိုင်း */
-        .footer { 
-            background: #fff0e0; 
-            padding: 40px 10px; 
-            border-radius: 40px 40px 0 0; 
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
-        }
-        .mic-row { 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-        }
-        .btn-group { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 12px;
-        }
-        .lang-label {
-            background: white;
-            padding: 5px 15px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #555;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        /* အလံနောက်ခံဖြင့် ခလုတ်များ */
-        .mic-btn { 
-            width: 90px; 
-            height: 90px; 
-            border-radius: 50%; 
-            border: 4px solid #fff; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background-size: cover; 
-            background-position: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-        #btnMM { background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('https://flagcdn.com/w320/mm.png'); }
-        #btnTH { background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('https://flagcdn.com/w320/th.png'); }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .app-container { background: white; width: 95%; max-width: 420px; height: 85vh; border-radius: 30px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
         
-        .mic-btn span { font-size: 30px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .mic-btn:active { transform: scale(0.9); }
+        .display-area { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; }
+        .status { font-size: 14px; color: #ff4757; font-weight: bold; margin-bottom: 20px; }
+        .original { font-size: 18px; color: #888; min-height: 30px; }
+        .translated { font-size: 26px; font-weight: bold; color: #333; margin-top: 15px; }
 
-        /* အသံဖမ်းနေစဉ် ပြသမည့် Animation */
-        .listening { 
-            border-color: #ff4757 !important; 
-            animation: pulse 1.5s infinite; 
+        .footer { background: #fdf2e9; padding: 30px; display: flex; flex-direction: column; align-items: center; border-radius: 40px 40px 0 0; gap: 20px; }
+        
+        /* ခလုတ်များ တည်ဆောက်ပုံ */
+        .controls-row { display: flex; align-items: center; gap: 25px; }
+
+        /* အဓိက အသံဖမ်းခလုတ် */
+        .main-mic-btn {
+            width: 90px; height: 90px; border-radius: 50%; border: 5px solid #fff;
+            background-size: cover; background-position: center; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
         }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(255, 71, 87, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        .btn-mm { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://flagcdn.com/w320/mm.png'); }
+        .btn-th { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://flagcdn.com/w320/th.png'); }
+
+        /* ဘာသာစကား ပြောင်းလဲသည့် ခလုတ် */
+        .switch-btn {
+            width: 50px; height: 50px; border-radius: 50%; border: none;
+            background: #fff; color: #8d5524; font-size: 20px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
         }
+        .switch-btn:active { transform: rotate(180deg); }
+
+        .listening { transform: scale(1.1); animation: pulse 1.5s infinite; border-color: #ff4757; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
+        
+        .hint { font-size: 13px; color: #8d5524; font-weight: 500; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="display-area" id="displayArea">
-        <div id="statusText">စကားပြောရန် အလံကို နှိပ်ပါ</div>
+    <div class="display-area">
+        <div class="status" id="langLabel">MYANMAR MODE</div>
+        <div class="original" id="origText">နှိပ်ပြီး စကားပြောပါ</div>
+        <div class="translated" id="transText"></div>
     </div>
 
     <div class="footer">
-        <div class="mic-row">
-            <div class="btn-group">
-                <div class="lang-label">Myanmar</div>
-                <button class="mic-btn" id="btnMM" onclick="startRecognition('my-MM', 'th')"><span>🎤</span></button>
-            </div>
-            <div class="btn-group">
-                <div class="lang-label">Thai</div>
-                <button class="mic-btn" id="btnTH" onclick="startRecognition('th-TH', 'my')"><span>🎤</span></button>
-            </div>
+        <div class="controls-row">
+            <button class="main-mic-btn btn-mm" id="micBtn" onclick="toggleMic()">
+                <span style="font-size:30px; color:white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">🎤</span>
+            </button>
+
+            <button class="switch-btn" onclick="manualSwitch()" title="Switch Language">
+                🔄
+            </button>
         </div>
+        <div class="hint" id="hintText">မြန်မာဘာသာကို နားထောင်မည်</div>
     </div>
 </div>
 
 <script>
-    const displayArea = document.getElementById('displayArea');
     let recognition;
+    let isListening = false;
+    let currentInputLang = 'my-MM'; 
 
-    // အသံပြန်ထွက်ပေးသည့် Function
-    function speak(text, langCode) {
+    function speak(text, lang) {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = langCode;
-        // အသံနှုန်းကို ပုံမှန်ထားပါ (1.0)
-        utterance.rate = 1.0;
+        utterance.lang = lang;
         window.speechSynthesis.speak(utterance);
     }
 
-    function startRecognition(inputLang, targetLang) {
-        if (!('webkitSpeechRecognition' in window)) {
-            alert("သင့် Browser သည် အသံဖမ်းစနစ်ကို Support မလုပ်ပါ။ Chrome သုံးပေးပါ။");
+    // ဘာသာစကားကို လက်နဲ့ ပြောင်းလဲသည့် function
+    function manualSwitch() {
+        if (isListening) recognition.stop();
+        switchLanguageLogic();
+    }
+
+    function switchLanguageLogic() {
+        const micBtn = document.getElementById('micBtn');
+        const langLabel = document.getElementById('langLabel');
+        const hintText = document.getElementById('hintText');
+
+        if (currentInputLang === 'my-MM') {
+            currentInputLang = 'th-TH';
+            micBtn.className = 'main-mic-btn btn-th';
+            langLabel.innerText = "THAI MODE";
+            hintText.innerText = "ထိုင်းဘာသာကို နားထောင်မည်";
+        } else {
+            currentInputLang = 'my-MM';
+            micBtn.className = 'main-mic-btn btn-mm';
+            langLabel.innerText = "MYANMAR MODE";
+            hintText.innerText = "မြန်မာဘာသာကို နားထောင်မည်";
+        }
+    }
+
+    function toggleMic() {
+        if (isListening) {
+            recognition.stop();
             return;
         }
+        startListening();
+    }
 
-        // အသံဖမ်းစနစ်အသစ် စတင်ခြင်း
-        recognition = new webkitSpeechRecognition();
-        recognition.lang = inputLang;
-        recognition.interimResults = false; // စကားပြောပြီးမှ ရလဒ်ထုတ်ရန်
-        recognition.maxAlternatives = 1;
-
-        const activeBtn = inputLang === 'my-MM' ? document.getElementById('btnMM') : document.getElementById('btnTH');
+    function startListening() {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = currentInputLang;
         
+        const micBtn = document.getElementById('micBtn');
+
         recognition.onstart = () => {
-            activeBtn.classList.add('listening');
-            displayArea.innerHTML = `<div id="statusText">နားထောင်နေသည်...</div>`;
-        };
-
-        recognition.onerror = (event) => {
-            console.error(event.error);
-            activeBtn.classList.remove('listening');
-            displayArea.innerHTML = `<div>Error: ${event.error}<br>ပြန်ကြိုးစားကြည့်ပါ။</div>`;
-        };
-
-        recognition.onend = () => {
-            activeBtn.classList.remove('listening');
+            isListening = true;
+            micBtn.classList.add('listening');
         };
 
         recognition.onresult = async (event) => {
             const transcript = event.results[0][0].transcript;
-            displayArea.innerHTML = `<div class="original-text">${transcript}</div><div>ဘာသာပြန်နေသည်...</div>`;
+            document.getElementById('origText').innerText = transcript;
+
+            const targetLang = (currentInputLang === 'my-MM') ? 'th' : 'my';
 
             try {
-                // Google Translate Free API အသုံးပြုခြင်း
-                const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${inputLang.split('-')[0]}&tl=${targetLang}&dt=t&q=${encodeURI(transcript)}`);
-                const data = await response.json();
-                const translatedText = data[0][0][0];
+                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentInputLang.split('-')[0]}&tl=${targetLang}&dt=t&q=${encodeURI(transcript)}`);
+                const data = await res.json();
+                const translated = data[0][0][0];
 
-                // ရလဒ်ပြသခြင်း
-                displayArea.innerHTML = `
-                    <div class="original-text">${transcript}</div>
-                    <div class="translated-text">${translatedText}</div>
-                `;
+                document.getElementById('transText').innerText = translated;
+                speak(translated, targetLang === 'th' ? 'th-TH' : 'my-MM');
 
-                // ဘာသာပြန်ထားသည့်ဘာသာစကားဖြင့် အသံထွက်ပေးခြင်း
-                const speechLang = targetLang === 'th' ? 'th-TH' : 'my-MM';
-                speak(translatedText, speechLang);
+                // ဘာသာပြန်ပြီးတာနဲ့ တစ်ခါတည်း အလိုအလျောက်ပါ နောက်တစ်လှည့်အတွက် ပြောင်းပေးမယ်
+                switchLanguageLogic();
 
-            } catch (error) {
-                displayArea.innerHTML = `<div>ဘာသာပြန်ရာတွင် အခက်အခဲရှိနေပါသည်။</div>`;
+            } catch (e) {
+                console.error(e);
             }
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            micBtn.classList.remove('listening');
         };
 
         recognition.start();
@@ -194,3 +153,4 @@
 
 </body>
 </html>
+
