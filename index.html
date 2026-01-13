@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-    <div style="position: absolute; z-index: 99999">
+<div style="position: absolute; z-index: 99999">
       <input autocomplete="off" type="checkbox" id="aadsstickymkb8jleb" hidden />
       <div style="padding-top: 60px; padding-bottom: 0;">
         <div style="width:120px;height:60px;position:fixed;text-align:center;font-size:0;top:0;left:0;right:0;margin:auto">
@@ -28,46 +28,46 @@
       }
     </style>
     </div></div>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voice Translator with Manual Switch</title>
+    <title>MM-TH Voice Translator</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #fdfdfd; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .app-container { background: white; width: 95%; max-width: 420px; height: 85vh; border-radius: 30px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
         
         .display-area { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; }
-        .status { font-size: 14px; color: #ff4757; font-weight: bold; margin-bottom: 20px; }
+        .status { font-size: 14px; color: #2d3436; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
         .original { font-size: 18px; color: #888; min-height: 30px; }
-        .translated { font-size: 26px; font-weight: bold; color: #333; margin-top: 15px; }
+        .translated { font-size: 26px; font-weight: bold; color: #d63031; margin-top: 15px; }
 
-        .footer { background: #fdf2e9; padding: 30px; display: flex; flex-direction: column; align-items: center; border-radius: 40px 40px 0 0; gap: 20px; }
+        .footer { background: #fff5f5; padding: 30px; display: flex; flex-direction: column; align-items: center; border-radius: 40px 40px 0 0; gap: 20px; }
         
-        /* ခလုတ်များ တည်ဆောက်ပုံ */
-        .controls-row { display: flex; align-items: center; gap: 25px; }
+        .controls-row { display: flex; align-items: center; gap: 20px; }
 
         /* အဓိက အသံဖမ်းခလုတ် */
         .main-mic-btn {
-            width: 90px; height: 90px; border-radius: 50%; border: 5px solid #fff;
+            width: 95px; height: 95px; border-radius: 50%; border: 5px solid #fff;
             background-size: cover; background-position: center; cursor: pointer;
             box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: 0.3s;
             display: flex; align-items: center; justify-content: center;
         }
+        /* အလံပုံများကို Thai သို့ ပြောင်းထားသည် */
         .btn-mm { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://flagcdn.com/w320/mm.png'); }
         .btn-th { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://flagcdn.com/w320/th.png'); }
 
-        /* ဘာသာစကား ပြောင်းလဲသည့် ခလုတ် */
-        .switch-btn {
+        .side-btn {
             width: 50px; height: 50px; border-radius: 50%; border: none;
-            background: #fff; color: #8d5524; font-size: 20px; cursor: pointer;
+            background: #fff; color: #d63031; font-size: 20px; cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;
-            transition: 0.3s;
+            transition: 0.2s;
         }
-        .switch-btn:active { transform: rotate(180deg); }
+        .side-btn:active { transform: scale(0.9); }
 
-        .listening { transform: scale(1.1); animation: pulse 1.5s infinite; border-color: #ff4757; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(255, 71, 87, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); } }
+        .listening { transform: scale(1.1); animation: pulse 1.5s infinite; border-color: #d63031; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(214, 48, 49, 0); } 100% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0); } }
         
-        .hint { font-size: 13px; color: #8d5524; font-weight: 500; }
+        .hint { font-size: 13px; color: #2d3436; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -81,13 +81,13 @@
 
     <div class="footer">
         <div class="controls-row">
+            <button class="side-btn" onclick="manualSwitch()" title="Switch Language">🔄</button>
+
             <button class="main-mic-btn btn-mm" id="micBtn" onclick="toggleMic()">
-                <span style="font-size:30px; color:white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">🎤</span>
+                <span style="font-size:32px; color:white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">🎤</span>
             </button>
 
-            <button class="switch-btn" onclick="manualSwitch()" title="Switch Language">
-                🔄
-            </button>
+            <button class="side-btn" onclick="replayAudio()" title="Replay Translation">🔊</button>
         </div>
         <div class="hint" id="hintText">မြန်မာဘာသာကို နားထောင်မည်</div>
     </div>
@@ -97,14 +97,23 @@
     let recognition;
     let isListening = false;
     let currentInputLang = 'my-MM'; 
+    let lastTranslation = ""; 
+    let lastTargetLang = "";  
 
     function speak(text, lang) {
+        if (!text) return;
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = lang;
         window.speechSynthesis.speak(utterance);
     }
 
-    // ဘာသာစကားကို လက်နဲ့ ပြောင်းလဲသည့် function
+    function replayAudio() {
+        if (lastTranslation !== "") {
+            const speechLang = lastTargetLang === 'th' ? 'th-TH' : 'my-MM';
+            speak(lastTranslation, speechLang);
+        }
+    }
+
     function manualSwitch() {
         if (isListening) recognition.stop();
         switchLanguageLogic();
@@ -137,7 +146,12 @@
     }
 
     function startListening() {
-        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Chrome Browser သုံးပေးပါ။");
+            return;
+        }
+
+        recognition = new webkitSpeechRecognition();
         recognition.lang = currentInputLang;
         
         const micBtn = document.getElementById('micBtn');
@@ -159,13 +173,15 @@
                 const translated = data[0][0][0];
 
                 document.getElementById('transText').innerText = translated;
-                speak(translated, targetLang === 'th' ? 'th-TH' : 'my-MM');
+                
+                lastTranslation = translated;
+                lastTargetLang = targetLang;
 
-                // ဘာသာပြန်ပြီးတာနဲ့ တစ်ခါတည်း အလိုအလျောက်ပါ နောက်တစ်လှည့်အတွက် ပြောင်းပေးမယ်
+                speak(translated, targetLang === 'th' ? 'th-TH' : 'my-MM');
                 switchLanguageLogic();
 
             } catch (e) {
-                console.error(e);
+                console.error("Error:", e);
             }
         };
 
@@ -180,3 +196,4 @@
 
 </body>
 </html>
+
