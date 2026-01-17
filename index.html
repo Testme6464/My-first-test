@@ -1,30 +1,6 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-    <div style="position: absolute; z-index: 99999">
-      <input autocomplete="off" type="checkbox" id="aadsstickymkb8jleb" hidden />
-      <div style="padding-top: 60px; padding-bottom: 0;">
-        <div style="width:120px;height:60px;position:fixed;text-align:center;font-size:0;top:0;left:0;right:0;margin:auto">
-          <label for="aadsstickymkb8jleb" style="bottom: -24px; right: 0;; position: absolute;border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px;z-index: 99999;cursor:pointer">
-            <svg fill="#000000" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-              <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337 "/>
-            </svg>
-          </label>
-          <div id="frame" style="width: 120px;margin: auto;z-index: 99998;height: auto">
-                      <iframe data-aa=2423939 src=//ad.a-ads.com/2423939/?size=120x60 style='border:0; padding:0; width:120px; height:60px; overflow:hidden; margin: auto'></iframe>
-                      <div style="width: 120px;margin:auto;text-align: left;position: absolute;left: 0;right: 0">
-                        <a style="display:inline-block;font-size: 13px;color: #263238;padding: 4px 10px;background: #F8F8F9;text-decoration: none; border-radius: 0 0 4px 4px;"
-                          id="frame-link"
-                          target="_blank"
-                          href="https://aads.com/campaigns/new?source_id=2423939&source_type=ad_unit&partner=2423939">
-                          Advertise here
-                        </a>
-                      </div>
-                  </div>
-        </div>
-        <style> #aadsstickymkb8jleb:checked + div { display: none; } </style>
-    </div></div>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MM-TH Voice Translator</title>
@@ -41,7 +17,6 @@
         .btn-mm { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://flagcdn.com/w320/mm.png'); }
         .btn-th { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://flagcdn.com/w320/th.png'); }
         .side-btn { width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff; color: #d63031; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .side-btn:active { transform: scale(0.9); }
         .listening { transform: scale(1.1); animation: pulse 1.5s infinite; border-color: #d63031; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(214, 48, 49, 0); } 100% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0); } }
         .hint { font-size: 13px; color: #2d3436; font-weight: 500; }
@@ -55,18 +30,19 @@
         <div class="original" id="origText">နှိပ်ပြီး စကားပြောပါ</div>
         <div class="translated" id="transText"></div>
     </div>
-
     <div class="footer">
         <div class="controls-row">
-            <button class="side-btn" onclick="manualSwitch()" title="Switch Language">🔄</button>
+            <button class="side-btn" onclick="manualSwitch()">🔄</button>
             <button class="main-mic-btn btn-mm" id="micBtn" onclick="toggleMic()">
-                <span style="font-size:32px; color:white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">🎤</span>
+                <span style="font-size:32px; color:white;">🎤</span>
             </button>
-            <button class="side-btn" onclick="replayAudio()" title="Replay Translation">🔊</button>
+            <button class="side-btn" onclick="replayAudio()">🔊</button>
         </div>
         <div class="hint" id="hintText">မြန်မာဘာသာကို နားထောင်မည်</div>
     </div>
 </div>
+
+<audio id="ttsAudio" style="display:none;"></audio>
 
 <script>
     let recognition;
@@ -75,92 +51,66 @@
     let lastTranslation = ""; 
     let lastTargetLang = "";  
 
-    // WebView အတွက် အထူးပြင်ဆင်ထားသော speak function
     function speak(text, lang) {
         if (!text) return;
-        // Google TTS Link ကို အသုံးပြုခြင်းက WebView မှာ အသံထွက်ဖို့ အသေချာဆုံးပါ
-        const googleTTS = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=twbar`;
-        const audio = new Audio(googleTTS);
-        audio.play().catch(e => console.error("Audio Playback Error:", e));
+        const audioTag = document.getElementById('ttsAudio');
+        // Google TTS ကို gtx client သုံးခြင်းက ပိုစိတ်ချရပါတယ်
+        const googleTTS = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=gtx`;
+        
+        audioTag.src = googleTTS;
+        audioTag.play().catch(e => {
+            console.log("Audio play failed, using fallback...");
+            // Backup: Web Speech API
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = lang;
+            window.speechSynthesis.speak(msg);
+        });
     }
 
     function replayAudio() {
-        if (lastTranslation) {
-            speak(lastTranslation, lastTargetLang);
-        }
+        if (lastTranslation) speak(lastTranslation, lastTargetLang);
     }
 
     function manualSwitch() {
         const micBtn = document.getElementById('micBtn');
         const langLabel = document.getElementById('langLabel');
-        const hintText = document.getElementById('hintText');
-
         if (currentInputLang === 'my-MM') {
             currentInputLang = 'th-TH';
             micBtn.className = 'main-mic-btn btn-th';
             langLabel.innerText = 'THAI MODE';
-            hintText.innerText = 'ထိုင်းဘာသာကို နားထောင်မည်';
         } else {
             currentInputLang = 'my-MM';
             micBtn.className = 'main-mic-btn btn-mm';
             langLabel.innerText = 'MYANMAR MODE';
-            hintText.innerText = 'မြန်မာဘာသာကို နားထောင်မည်';
         }
     }
 
     function toggleMic() {
-        if (isListening) {
-            recognition.stop();
-        } else {
-            startListening();
-        }
+        if (isListening) { recognition.stop(); } else { startListening(); }
     }
 
     function startListening() {
-        if (!('webkitSpeechRecognition' in window)) {
-            alert("Speech recognition not supported in this browser.");
-            return;
-        }
-
+        if (!('webkitSpeechRecognition' in window)) { alert("Speech not supported"); return; }
         recognition = new webkitSpeechRecognition();
         recognition.lang = currentInputLang;
-        recognition.interimResults = false;
-
-        recognition.onstart = () => {
-            isListening = true;
-            document.getElementById('micBtn').classList.add('listening');
-        };
-
+        recognition.onstart = () => { isListening = true; document.getElementById('micBtn').classList.add('listening'); };
         recognition.onresult = async (event) => {
             const transcript = event.results[0][0].transcript;
             document.getElementById('origText').innerText = transcript;
-            
             const targetLang = (currentInputLang === 'my-MM') ? 'th' : 'my';
-            
             try {
                 const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURI(transcript)}`);
                 const data = await res.json();
                 const translated = data[0][0][0];
-                
                 document.getElementById('transText').innerText = translated;
                 lastTranslation = translated;
                 lastTargetLang = (targetLang === 'my') ? 'my-MM' : 'th-TH';
-                
                 speak(translated, lastTargetLang);
-            } catch (e) {
-                console.error("Translation Error:", e);
-            }
+            } catch (e) { console.error(e); }
         };
-
-        recognition.onend = () => {
-            isListening = false;
-            document.getElementById('micBtn').classList.remove('listening');
-        };
-
+        recognition.onend = () => { isListening = false; document.getElementById('micBtn').classList.remove('listening'); };
         recognition.start();
     }
 </script>
-
 </body>
 </html>
-
