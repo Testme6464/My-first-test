@@ -101,11 +101,12 @@
     let lastTargetLang = "";  
 
     function speak(text, lang) {
-        if (!text) return;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        window.speechSynthesis.speak(utterance);
-    }
+    if (!text) return;
+    // WebView မှာ အသံထွက်ဖို့ အသေချာဆုံးက Google TTS link သုံးတာပါ
+    const googleTTS = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=twbar`;
+    const audio = new Audio(googleTTS);
+    audio.play();
+}
 
     function replayAudio() {
         if (lastTranslation !== "") {
