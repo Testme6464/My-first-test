@@ -5,21 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MM-TH Voice Translator</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #fdfdfd; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #fcfcfc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .app-container { background: white; width: 95%; max-width: 420px; height: 85vh; border-radius: 30px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        
         .display-area { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; }
-        .status { font-size: 14px; color: #2d3436; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .status { font-size: 14px; color: #2D3E50; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
         .original { font-size: 18px; color: #888; min-height: 30px; }
-        .translated { font-size: 26px; font-weight: bold; color: #d63031; margin-top: 15px; }
-        .footer { background: #fff5f5; padding: 30px; display: flex; flex-direction: column; align-items: center; border-radius: 40px 40px 0 0; gap: 20px; }
+        .translated { font-size: 26px; font-weight: bold; color: #333; margin-top: 15px; }
+
+        .footer { background: #f1f5ff; padding: 30px; display: flex; flex-direction: column; align-items: center; border-radius: 40px 40px 0 0; gap: 20px; }
+        
         .controls-row { display: flex; align-items: center; gap: 20px; }
-        .main-mic-btn { width: 95px; height: 95px; border-radius: 50%; border: 5px solid #fff; background-size: cover; background-position: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+
+        .main-mic-btn {
+            width: 95px; height: 95px; border-radius: 50%; border: 5px solid #fff;
+            background-size: cover; background-position: center; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* အလံပုံများကို Thailand (th) သို့ ပြောင်းထားသည် */
         .btn-mm { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://flagcdn.com/w320/mm.png'); }
         .btn-th { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('https://flagcdn.com/w320/th.png'); }
-        .side-btn { width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff; color: #d63031; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .listening { transform: scale(1.1); animation: pulse 1.5s infinite; border-color: #d63031; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(214, 48, 49, 0); } 100% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0); } }
-        .hint { font-size: 13px; color: #2d3436; font-weight: 500; }
+
+        .side-btn {
+            width: 50px; height: 50px; border-radius: 50%; border: none;
+            background: #fff; color: #0038a8; font-size: 20px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .side-btn:active { transform: scale(0.9); }
+
+        .listening { transform: scale(1.1); animation: pulse 1.5s infinite; border-color: #0038a8; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 56, 168, 0.6); } 70% { box-shadow: 0 0 0 20px rgba(0, 56, 168, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 56, 168, 0); } }
+        
+        .hint { font-size: 13px; color: #0038a8; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -30,19 +50,20 @@
         <div class="original" id="origText">နှိပ်ပြီး စကားပြောပါ</div>
         <div class="translated" id="transText"></div>
     </div>
+
     <div class="footer">
         <div class="controls-row">
-            <button class="side-btn" onclick="manualSwitch()">🔄</button>
+            <button class="side-btn" onclick="manualSwitch()" title="Switch Language">🔄</button>
+
             <button class="main-mic-btn btn-mm" id="micBtn" onclick="toggleMic()">
-                <span style="font-size:32px; color:white;">🎤</span>
+                <span style="font-size:32px; color:white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">🎤</span>
             </button>
-            <button class="side-btn" onclick="replayAudio()">🔊</button>
+
+            <button class="side-btn" onclick="replayAudio()" title="Replay Translation">🔊</button>
         </div>
         <div class="hint" id="hintText">မြန်မာဘာသာကို နားထောင်မည်</div>
     </div>
 </div>
-
-<audio id="ttsAudio" style="display:none;"></audio>
 
 <script>
     let recognition;
@@ -53,64 +74,100 @@
 
     function speak(text, lang) {
         if (!text) return;
-        const audioTag = document.getElementById('ttsAudio');
-        // Google TTS ကို gtx client သုံးခြင်းက ပိုစိတ်ချရပါတယ်
-        const googleTTS = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&client=gtx`;
-        
-        audioTag.src = googleTTS;
-        audioTag.play().catch(e => {
-            console.log("Audio play failed, using fallback...");
-            // Backup: Web Speech API
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = lang;
-            window.speechSynthesis.speak(msg);
-        });
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        window.speechSynthesis.speak(utterance);
     }
 
     function replayAudio() {
-        if (lastTranslation) speak(lastTranslation, lastTargetLang);
+        if (lastTranslation !== "") {
+            const speechLang = (lastTargetLang === 'th-TH') ? 'th-TH' : 'my-MM';
+            speak(lastTranslation, speechLang);
+        }
     }
 
     function manualSwitch() {
+        if (isListening) recognition.stop();
+        switchLanguageLogic();
+    }
+
+    function switchLanguageLogic() {
         const micBtn = document.getElementById('micBtn');
         const langLabel = document.getElementById('langLabel');
+        const hintText = document.getElementById('hintText');
+
         if (currentInputLang === 'my-MM') {
             currentInputLang = 'th-TH';
             micBtn.className = 'main-mic-btn btn-th';
-            langLabel.innerText = 'THAI MODE';
+            langLabel.innerText = "THAI MODE";
+            hintText.innerText = "ထိုင်းဘာသာကို နားထောင်မည်";
         } else {
             currentInputLang = 'my-MM';
             micBtn.className = 'main-mic-btn btn-mm';
-            langLabel.innerText = 'MYANMAR MODE';
+            langLabel.innerText = "MYANMAR MODE";
+            hintText.innerText = "မြန်မာဘာသာကို နားထောင်မည်";
         }
     }
 
     function toggleMic() {
-        if (isListening) { recognition.stop(); } else { startListening(); }
+        if (isListening) {
+            recognition.stop();
+            return;
+        }
+        startListening();
     }
 
     function startListening() {
-        if (!('webkitSpeechRecognition' in window)) { alert("Speech not supported"); return; }
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Chrome Browser သုံးပေးပါ။");
+            return;
+        }
+
         recognition = new webkitSpeechRecognition();
         recognition.lang = currentInputLang;
-        recognition.onstart = () => { isListening = true; document.getElementById('micBtn').classList.add('listening'); };
+        
+        const micBtn = document.getElementById('micBtn');
+
+        recognition.onstart = () => {
+            isListening = true;
+            micBtn.classList.add('listening');
+        };
+
         recognition.onresult = async (event) => {
             const transcript = event.results[0][0].transcript;
             document.getElementById('origText').innerText = transcript;
+
+            // Target Language ကို th (Thai) သို့ ပြောင်းထားသည်
             const targetLang = (currentInputLang === 'my-MM') ? 'th' : 'my';
+
             try {
-                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURI(transcript)}`);
+                const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentInputLang.split('-')[0]}&tl=${targetLang}&dt=t&q=${encodeURI(transcript)}`);
                 const data = await res.json();
                 const translated = data[0][0][0];
+
                 document.getElementById('transText').innerText = translated;
+                
                 lastTranslation = translated;
-                lastTargetLang = (targetLang === 'my') ? 'my-MM' : 'th-TH';
-                speak(translated, lastTargetLang);
-            } catch (e) { console.error(e); }
+                lastTargetLang = (targetLang === 'th') ? 'th-TH' : 'my';
+
+                speak(translated, (targetLang === 'th') ? 'th-TH' : 'my-MM');
+                
+                // စကားပြောပြီးလျှင် ဘာသာစကား အလိုအလျောက် ပြန်ချိန်းပေးရန်
+                switchLanguageLogic();
+
+            } catch (e) {
+                console.error("Error:", e);
+            }
         };
-        recognition.onend = () => { isListening = false; document.getElementById('micBtn').classList.remove('listening'); };
+
+        recognition.onend = () => {
+            isListening = false;
+            micBtn.classList.remove('listening');
+        };
+
         recognition.start();
     }
 </script>
+
 </body>
 </html>
